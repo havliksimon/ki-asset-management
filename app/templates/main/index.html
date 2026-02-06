@@ -1,0 +1,1149 @@
+{% extends "base.html" %}
+
+{% block title %}KI Asset Management – Prague Club of Investors{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Portfolio Performance Hero Card */
+.portfolio-hero-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1.5rem;
+    padding: 2rem 3rem;
+    margin: 2rem auto;
+    max-width: 600px;
+    text-align: center;
+    animation: fadeInUp 0.8s ease 0.6s both;
+}
+
+.portfolio-hero-card .label {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.5rem;
+}
+
+.portfolio-hero-card .value {
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.portfolio-hero-card .value.positive {
+    background: linear-gradient(135deg, #00c853 0%, #00b0ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.portfolio-hero-card .value.negative {
+    background: linear-gradient(135deg, #ff1744 0%, #ff9100 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.portfolio-hero-card .meta {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.portfolio-hero-card .benchmarks {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.portfolio-hero-card .benchmark {
+    text-align: center;
+}
+
+.portfolio-hero-card .benchmark-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+}
+
+.portfolio-hero-card .benchmark-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Czech language note */
+.czech-note {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.75rem;
+    padding: 1rem 1.5rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.czech-note i {
+    color: #f5af19;
+}
+
+/* Portfolio Chart in About Section */
+.portfolio-chart-hero {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.portfolio-chart-hero h5 {
+    font-size: 1.1rem;
+}
+
+.portfolio-chart-hero .chart-wrapper {
+    position: relative;
+}
+
+.portfolio-chart-hero .chart-legend small {
+    font-size: 0.75rem;
+}
+
+.portfolio-chart-hero .chart-legend .badge {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border-radius: 2px;
+    display: inline-block;
+    margin-right: 4px;
+}
+
+/* Perks Section */
+.perks-section {
+    background: var(--gray-50);
+    padding: 4rem 0;
+}
+
+.perk-card {
+    background: var(--white);
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.perk-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}
+
+.perk-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+}
+
+.perk-icon.blue {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+    color: #667eea;
+}
+
+.perk-icon.green {
+    background: linear-gradient(135deg, rgba(0, 200, 83, 0.15) 0%, rgba(0, 176, 255, 0.15) 100%);
+    color: #00c853;
+}
+
+.perk-icon.orange {
+    background: linear-gradient(135deg, rgba(245, 175, 25, 0.15) 0%, rgba(241, 39, 17, 0.15) 100%);
+    color: #f5af19;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section" id="home">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    
+    <div class="hero-content">
+        <div class="hero-badge">
+            <span>Prague Club of Investors</span>
+        </div>
+        
+        <h1 class="hero-title display-1">
+            KI Asset<br>
+            <span class="highlight">Management</span>
+        </h1>
+        
+        <p class="hero-subtitle" data-i18n="hero.subtitle">
+            Student-driven investment management delivering institutional-grade research 
+            and superior risk-adjusted returns through emerging market opportunities.
+        </p>
+        
+        <!-- Portfolio Performance - Prominent -->
+        {% if stats.portfolio_return is not none %}
+        <div class="portfolio-hero-card">
+            <div class="label" data-i18n="portfolio.return">Board-Approved Portfolio Return</div>
+            <div class="value {% if stats.portfolio_return >= 0 %}positive{% else %}negative{% endif %}">
+                {{ "%.2f"|format(stats.portfolio_return) }}%
+            </div>
+            <div class="meta">
+                {{ stats.portfolio_positions }} <span data-i18n="portfolio.positions">Active Positions</span>
+                <span class="mx-2">|</span> 
+                <span data-i18n="portfolio.updated">Updated</span> {{ stats.portfolio_updated.strftime('%Y-%m-%d') if stats.portfolio_updated else 'Recently' }}
+            </div>
+            <div class="benchmarks">
+                <div class="benchmark">
+                    <div class="benchmark-label">S&P 500</div>
+                    <div class="benchmark-value">{{ "%.1f"|format(stats.benchmark_spy) }}%</div>
+                </div>
+                <div class="benchmark">
+                    <div class="benchmark-label">FTSE All-World</div>
+                    <div class="benchmark-value">{{ "%.1f"|format(stats.benchmark_ftse) }}%</div>
+                </div>
+                <div class="benchmark">
+                    <div class="benchmark-label">EEMS</div>
+                    <div class="benchmark-value">{{ "%.1f"|format(stats.benchmark_eems) }}%</div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- Show placeholder when no data -->
+        <div class="portfolio-hero-card">
+            <div class="label" data-i18n="placeholder.performance">Investment Performance</div>
+            <div class="value positive" data-i18n="placeholder.track_record">Track Record</div>
+            <div class="meta" data-i18n="placeholder.real_time">
+                Real-time portfolio tracking vs major benchmarks
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-value">{{ stats.total_meetings }}+</div>
+                <div class="hero-stat-label" data-i18n="stats.meetings">Analytical Meetings</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">{{ stats.total_users }}</div>
+                <div class="hero-stat-label" data-i18n="stats.members">Team Members</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">{{ stats.approved_analyses }}</div>
+                <div class="hero-stat-label" data-i18n="stats.approved">Approved Analyses</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-value">{{ stats.portfolio_positions }}</div>
+                <div class="hero-stat-label" data-i18n="stats.stocks">Stocks in Portfolio</div>
+            </div>
+        </div>
+        
+        <div class="hero-cta">
+            {% if not current_user.is_authenticated %}
+                <a href="https://www.klubinvestoru.com/clenstvi" target="_blank" class="btn-hero-primary" data-i18n="hero.join">
+                    <i class="bi bi-person-plus"></i>
+                    Join the Team
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="btn-hero-secondary" data-i18n="hero.login">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Analyst Login
+                </a>
+                <div class="w-100"></div>
+                <div class="czech-note">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span>
+                        <span data-i18n="hero.czech_note">Currently accepting analysts working in</span> 
+                        <strong data-i18n="hero.czech_lang">Czech language</strong> 
+                        <span data-i18n="hero.only">only</span>
+                    </span>
+                </div>
+            {% else %}
+                {% if current_user.is_admin %}
+                    <a href="{{ url_for('analyst.dashboard') }}" class="btn-hero-primary" data-i18n="btn.dashboard">
+                        <i class="bi bi-speedometer2"></i>
+                        Admin Dashboard
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('analyst.dashboard') }}" class="btn-hero-primary" data-i18n="btn.my_dashboard">
+                        <i class="bi bi-speedometer2"></i>
+                        My Dashboard
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    
+    <a href="#about" class="hero-scroll">
+        <i class="bi bi-chevron-down"></i>
+        <span data-i18n="scroll.discover">Discover More</span>
+    </a>
+</section>
+
+<!-- About Section -->
+<section class="section" id="about">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-label" data-i18n="section.mission">Our Mission</span>
+            <h2 class="section-title">{% if request.cookies.get('lang') == 'cs' %}Kvalitní analýzy.<br>Studentský přístup.{% else %}Institutional-Grade Research.<br>Student-Driven Excellence.{% endif %}</h2>
+            <p class="section-subtitle" data-i18n="mission.subtitle">
+                Founded with a clear purpose: to bridge the gap between academic theory and real-world 
+                investment management. We operate on par with the finest Czech investment institutions.
+            </p>
+        </div>
+        
+        <div class="row align-items-center">
+            <div class="col-lg-6 reveal">
+                <div class="pe-lg-5">
+                    <h3 class="mb-4" data-i18n="ambition.title">KI AM Ambition</h3>
+                    <blockquote class="blockquote border-start border-4 border-primary ps-4 mb-4">
+                        <p class="mb-2 fst-italic" data-i18n="ambition.quote">
+                            "Umožnit motivovaným studentům získat reálnou zkušenost se správou kapitálu 
+                            & zhodnocovat prostředky spolku"
+                        </p>
+                        <footer class="blockquote-footer" data-i18n="ambition.translation">
+                            Enable motivated students to gain real capital management experience 
+                            & grow the club's assets
+                        </footer>
+                    </blockquote>
+                    
+                    <div class="d-flex gap-4 mt-5">
+                        <div class="text-center">
+                            <div class="display-4 text-gradient fw-bold">EEMS</div>
+                            <small class="text-muted">Benchmark</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="display-4 text-gradient-gold fw-bold">Outperform</div>
+                            <small class="text-muted">Target</small>
+                        </div>
+                    </div>
+                    
+                    {% if chart_data %}
+                    <!-- Portfolio Performance Chart -->
+                    <div class="portfolio-chart-hero mt-5 pt-4 border-top">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="mb-0 text-gradient fw-bold">
+                                <i class="bi bi-graph-up-arrow"></i> Portfolio Performance
+                            </h5>
+                            <small class="text-muted">Since Inception</small>
+                        </div>
+                        <div class="chart-wrapper" style="height: 200px;">
+                            <canvas id="ambitionPortfolioChart"></canvas>
+                        </div>
+                        <div class="chart-legend d-flex justify-content-center gap-3 mt-2 flex-wrap">
+                            <small class="text-muted">
+                                <span class="badge" style="background: #0d6efd;">&nbsp;</span> Portfolio
+                            </small>
+                            <small class="text-muted">
+                                <span class="badge" style="background: #ffc107;">&nbsp;</span> S&P 500
+                            </small>
+                            <small class="text-muted">
+                                <span class="badge" style="background: #0dcaf5;">&nbsp;</span> FTSE All-World
+                            </small>
+                            <small class="text-muted">
+                                <span class="badge" style="background: #6c757d;">&nbsp;</span> EEMS
+                            </small>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="col-lg-6 reveal reveal-delay-2">
+                <div class="feature-grid" style="grid-template-columns: 1fr;">
+                    <div class="feature-card mb-3">
+                        <div class="feature-icon blue">
+                            <i class="bi bi-lightbulb"></i>
+                        </div>
+                        <h4 class="feature-title" data-i18n="values.patience">Patience</h4>
+                        <p class="feature-text" data-i18n="values.patience.desc">Long-term thinking over short-term speculation. We believe in the power of compound growth.</p>
+                    </div>
+                    
+                    <div class="feature-card mb-3">
+                        <div class="feature-icon green">
+                            <i class="bi bi-eye"></i>
+                        </div>
+                        <h4 class="feature-title" data-i18n="values.foresight">Foresight</h4>
+                        <p class="feature-text" data-i18n="values.foresight.desc">Anticipating market trends before they materialize through rigorous fundamental analysis.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon gold">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h4 class="feature-title" data-i18n="values.integrity">Integrity</h4>
+                        <p class="feature-text" data-i18n="values.integrity.desc">Transparent analysis and honest reporting. We hold ourselves to the highest ethical standards.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Strategy Section -->
+<section class="section strategy-section" id="strategy">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-label" data-i18n="section.strategy">Investment Approach</span>
+            <h2 class="section-title" data-i18n="strategy.title">Our Strategy Pillars</h2>
+            <p class="section-subtitle" data-i18n="strategy.subtitle">
+                A disciplined approach combining emerging markets exposure with small-mid cap opportunities 
+                and compelling equity stories.
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-7 reveal">
+                <div class="strategy-grid">
+                    <div class="strategy-card">
+                        <h4 class="text-danger" data-i18n="strategy.no_leverage">
+                            <i class="bi bi-x-octagon"></i>
+                            No Leverage
+                        </h4>
+                        <p class="text-muted mb-0" data-i18n="strategy.no_leverage.desc">
+                            We avoid leverage to prevent increased volatility and drawdowns. 
+                            Asymmetric risk with unlimited loss potential has no place in our strategy.
+                        </p>
+                    </div>
+                    
+                    <div class="strategy-card">
+                        <h4 class="text-danger" data-i18n="strategy.no_shorts">
+                            <i class="bi bi-x-octagon"></i>
+                            No Shorts
+                        </h4>
+                        <p class="text-muted mb-0" data-i18n="strategy.no_shorts.desc">
+                            Short selling introduces margin call risks and borrow costs. 
+                            We prefer allocating time to finding winners rather than speculating on losers.
+                        </p>
+                    </div>
+                    
+                    <div class="strategy-card">
+                        <h4 class="text-danger" data-i18n="strategy.no_hedging">
+                            <i class="bi bi-x-octagon"></i>
+                            No Hedging
+                        </h4>
+                        <p class="text-muted mb-0" data-i18n="strategy.no_hedging.desc">
+                            We don't hedge currencies as they provide natural diversification. 
+                            FX risk is monitored during high volatility periods.
+                        </p>
+                    </div>
+                    
+                    <div class="strategy-card">
+                        <h4 class="text-success" data-i18n="strategy.unique">
+                            <i class="bi bi-check-circle"></i>
+                            Non-Replicable Strategy
+                        </h4>
+                        <p class="text-muted mb-0" data-i18n="strategy.unique.desc">
+                            Our portfolio cannot be replicated by standard ETFs. We actively select 
+                            and manage 15-25 positions for true diversification, not "di-worse-ification".
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-5 reveal reveal-delay-2">
+                <div class="allocation-chart">
+                    <h4 class="mb-4" data-i18n="allocation.title">Target Allocation</h4>
+                    
+                    <div class="allocation-item">
+                        <div class="allocation-color" style="background: #0d6efd;"></div>
+                        <div class="allocation-info">
+                            <div class="allocation-label" data-i18n="allocation.smid">SMID Caps</div>
+                            <div class="allocation-desc" data-i18n="allocation.smid.desc">Small-Mid Cap Opportunities</div>
+                        </div>
+                        <div class="allocation-percent">60%</div>
+                    </div>
+                    
+                    <div class="allocation-item">
+                        <div class="allocation-color" style="background: #198754;"></div>
+                        <div class="allocation-info">
+                            <div class="allocation-label" data-i18n="allocation.em">EM</div>
+                            <div class="allocation-desc" data-i18n="allocation.em.desc">Emerging Markets Exposure</div>
+                        </div>
+                        <div class="allocation-percent">30%</div>
+                    </div>
+                    
+                    <div class="allocation-item">
+                        <div class="allocation-color" style="background: #f5af19;"></div>
+                        <div class="allocation-info">
+                            <div class="allocation-label" data-i18n="allocation.stories">Equity Stories</div>
+                            <div class="allocation-desc" data-i18n="allocation.stories.desc">Special Situations & Themes</div>
+                        </div>
+                        <div class="allocation-percent">10%</div>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-top">
+                        <p class="small text-muted mb-0" data-i18n="allocation.note">
+                            <i class="bi bi-info-circle me-1"></i>
+                            Developed markets are at highs while retail investors fear EM. 
+                            Our unique composition of three complementary pillars provides 
+                            uncorrelated alpha opportunities.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section" id="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item reveal">
+                <div class="stat-number" data-count="{{ stats.total_meetings }}">0</div>
+                <div class="stat-label" data-i18n="stats.meetings">Analytical Meetings</div>
+            </div>
+            <div class="stat-item reveal reveal-delay-1">
+                <div class="stat-number" data-count="{{ stats.total_users }}">0</div>
+                <div class="stat-label" data-i18n="stats.members">Team Members</div>
+            </div>
+            <div class="stat-item reveal reveal-delay-2">
+                <div class="stat-number" data-count="{{ stats.approved_analyses }}">0</div>
+                <div class="stat-label" data-i18n="stats.approved">Approved Analyses</div>
+            </div>
+            <div class="stat-item reveal reveal-delay-3">
+                <div class="stat-number" data-count="{{ stats.portfolio_positions }}">0</div>
+                <div class="stat-label" data-i18n="stats.stocks">Stocks in Portfolio</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Platform Perks Section (for analysts) -->
+<section class="perks-section" id="platform">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-label" data-i18n="section.platform">For Our Analysts</span>
+            <h2 class="section-title" data-i18n="perks.title">Platform Perks</h2>
+            <p class="section-subtitle" data-i18n="perks.subtitle">
+                Exclusive tools and features available to KI Asset Management analysts.
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4 reveal">
+                <div class="perk-card">
+                    <div class="perk-icon blue">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h4 data-i18n="perks.tracking.title">Real-Time Tracking</h4>
+                    <p class="text-muted" data-i18n="perks.tracking.desc">
+                        Automatic price fetching from Yahoo Finance ensures our performance 
+                        data is always current and accurate.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 reveal reveal-delay-1">
+                <div class="perk-card">
+                    <div class="perk-icon green">
+                        <i class="bi bi-bar-chart-line"></i>
+                    </div>
+                    <h4 data-i18n="perks.benchmark.title">Benchmark Comparison</h4>
+                    <p class="text-muted" data-i18n="perks.benchmark.desc">
+                        Compare our portfolio against SPY, FTSE All-World, and EEMS 
+                        with normalized starting points for fair comparison.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4 reveal reveal-delay-2">
+                <div class="perk-card">
+                    <div class="perk-icon orange">
+                        <i class="bi bi-file-earmark-spreadsheet"></i>
+                    </div>
+                    <h4 data-i18n="perks.reports.title">Detailed Reports</h4>
+                    <p class="text-muted" data-i18n="perks.reports.desc">
+                        Export comprehensive CSV reports with individual analyst performance, 
+                        portfolio breakdown, and historical data.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analytics Dashboard Row -->
+        <div class="row g-4 mt-3">
+            <!-- Growth Timeline Chart -->
+            <div class="col-lg-7 reveal reveal-delay-1">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div>
+                                <h5 class="mb-1"><i class="bi bi-graph-up-arrow text-primary"></i> KI AM Growth Over Time</h5>
+                                <p class="text-muted small mb-0">Cumulative analyses and approved positions since inception</p>
+                            </div>
+                            {% if growth_data and growth_data.summary %}
+                            <div class="text-end">
+                                <div class="h4 mb-0 text-primary">{{ growth_data.summary.total }}</div>
+                                <small class="text-muted">Total Analyses</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div style="height: 280px;">
+                            {% if growth_data and growth_data.labels %}
+                            <canvas id="growthChart"></canvas>
+                            {% else %}
+                            <div class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                <i class="bi bi-graph-up me-2"></i> Growth data loading...
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Top Sectors -->
+            <div class="col-lg-5 reveal reveal-delay-2">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div>
+                                <h5 class="mb-1"><i class="bi bi-trophy text-success"></i> Top Sectors</h5>
+                                <p class="text-muted small mb-0">Best performing sectors by average return</p>
+                            </div>
+                            <span class="badge bg-success">Across all analyses</span>
+                        </div>
+                        {% if top_sectors and top_sectors.rows %}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Sector</th>
+                                        <th class="text-center">#</th>
+                                        <th class="text-end">Return</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in top_sectors.rows[:5] %}
+                                    <tr>
+                                        <td class="text-truncate" style="max-width: 150px;" title="{{ row.sector }}">{{ row.sector }}</td>
+                                        <td class="text-center">{{ row.count }}</td>
+                                        <td class="text-end">
+                                            <span class="{% if row.avg_return > 0 %}text-success{% else %}text-danger{% endif %}">
+                                                {% if row.avg_return > 0 %}+{% endif %}{{ "%.1f"|format(row.avg_return) }}%
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="d-flex align-items-center justify-content-center h-75 text-muted">
+                            <i class="bi bi-pie-chart me-2"></i> Sector data loading...
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="section team-section" id="team">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-label" data-i18n="section.team">Leadership</span>
+            <h2 class="section-title" data-i18n="team.title">Meet the Team</h2>
+            <p class="section-subtitle" data-i18n="team.subtitle">
+                Guided by experienced leaders and driven by passionate students, 
+                our team combines academic excellence with practical expertise.
+            </p>
+        </div>
+        
+        <div class="team-grid">
+            <!-- Adam Kolomazník -->
+            <div class="team-card reveal">
+                <div class="team-image-wrapper">
+                    <img src="{{ url_for('static', filename='images/team-leader.jpg') }}" 
+                         alt="Adam Kolomazník" 
+                         class="team-image"
+                         onerror="this.src='{{ url_for('static', filename='images/placeholder-avatar.jpg') }}'">
+                    <div class="team-image-overlay"></div>
+                </div>
+                <div class="team-content">
+                    <h3 class="team-name">Adam Kolomazník</h3>
+                    <div class="team-role">President of the Investment Committee</div>
+                    <div class="team-edu">
+                        <i class="bi bi-mortarboard"></i> CTU & WU Alumni
+                    </div>
+                    <p class="team-quote">
+                        "Leading strategic vision and investment decisions for the Prague Club of Investors. 
+                        Our mission is to provide students with real capital management experience while 
+                        delivering superior risk-adjusted returns."
+                    </p>
+                    <a href="https://www.linkedin.com/in/adam-kolomaznik/" target="_blank" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-linkedin"></i> LinkedIn
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Šimon Havlík -->
+            <div class="team-card reveal reveal-delay-2">
+                <div class="team-image-wrapper">
+                    <img src="{{ url_for('static', filename='images/team-member.png') }}" 
+                         alt="Šimon Havlík" 
+                         class="team-image"
+                         onerror="this.src='{{ url_for('static', filename='images/placeholder-avatar.jpg') }}'">
+                    <div class="team-image-overlay"></div>
+                </div>
+                <div class="team-content">
+                    <h3 class="team-name">Šimon Havlík</h3>
+                    <div class="team-role">Analyst & Lead Developer</div>
+                    <div class="team-edu">
+                        <i class="bi bi-mortarboard"></i> VŠE Economics Student
+                    </div>
+                    <p class="team-quote">
+                        "Join us and gain real-world investment experience while building production-grade 
+                        financial technology. Here, you'll learn equity research, portfolio management, 
+                        and software development—all while managing real capital."
+                    </p>
+                    <a href="https://www.linkedin.com/in/havliksimon/" target="_blank" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-linkedin"></i> LinkedIn
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if latest_blog_posts %}
+<!-- Blog Section - Latest Articles -->
+<section class="section" id="blog" style="background: #f8f9fa;">
+    <div class="container">
+        <div class="section-header reveal">
+            <span class="section-label">Latest Insights</span>
+            <h2 class="section-title">From Our Blog</h2>
+            <p class="section-subtitle">
+                Expert investment analysis, market insights, and research from our team of student analysts.
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            {% for post in latest_blog_posts %}
+            <div class="col-md-4 reveal{% if loop.index > 1 %} reveal-delay-{{ loop.index }}{% endif %}">
+                <article class="blog-card h-100" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s;">
+                    <div class="blog-card-image" style="height: 180px; position: relative; overflow: hidden;">
+                        {% if post.og_image %}
+                        <img src="{{ post.og_image }}" alt="{{ post.title }}" 
+                             style="width: 100%; height: 100%; object-fit: cover;"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="d-none align-items-center justify-content-center h-100 w-100 bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: absolute; top: 0; left: 0;">
+                            <i class="bi bi-journal-text" style="font-size: 2.5rem; opacity: 0.8; color: white;"></i>
+                        </div>
+                        {% else %}
+                        <div class="d-flex align-items-center justify-content-center h-100 w-100 bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <i class="bi bi-journal-text" style="font-size: 2.5rem; opacity: 0.8; color: white;"></i>
+                        </div>
+                        {% endif %}
+                        {% if post.category %}
+                        <span class="blog-card-category" style="position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">{{ post.category }}</span>
+                        {% endif %}
+                        {% if post.is_featured %}
+                        <span class="position-absolute top-0 end-0 m-2 badge bg-warning text-dark">
+                            <i class="bi bi-star-fill"></i>
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="blog-card-content p-4">
+                        <h3 class="blog-card-title" style="font-size: 1.1rem; line-height: 1.4; margin-bottom: 0.75rem;">
+                            <a href="{{ url_for('blog.post', slug=post.slug) }}" style="color: #333; text-decoration: none; font-weight: 600;">{{ post.title }}</a>
+                        </h3>
+                        <p class="blog-card-excerpt" style="font-size: 0.9rem; color: #666; line-height: 1.5; margin-bottom: 1rem;">{{ post.get_excerpt(100) }}</p>
+                        <div class="blog-card-meta d-flex flex-wrap gap-3" style="font-size: 0.8rem; color: #888;">
+                            <span>
+                                <i class="bi bi-person"></i>
+                                {{ post.author_name }}
+                            </span>
+                            <span>
+                                <i class="bi bi-calendar3"></i> {{ post.formatted_date }}
+                            </span>
+                            <span>
+                                <i class="bi bi-clock"></i> {{ post.reading_time }} min
+                            </span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-5 reveal">
+            <a href="{{ url_for('blog.index') }}" class="btn btn-primary btn-lg">
+                <i class="bi bi-journal-text"></i> View All Articles
+            </a>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('blog.new_post') }}" class="btn btn-outline-primary btn-lg ms-2">
+                <i class="bi bi-pencil-square"></i> Write a Post
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="cta-section" id="join">
+    <div class="container">
+        <div class="cta-content reveal">
+            <h2 class="cta-title" data-i18n="cta.title">Ready to Start Your Journey?</h2>
+            <p class="cta-text" data-i18n="cta.subtitle">
+                Join the Prague Club of Investors and gain hands-on experience in investment management. 
+                Work with real capital, learn from industry professionals, and build your track record.
+            </p>
+            {% if not current_user.is_authenticated %}
+                <a href="https://www.klubinvestoru.com/clenstvi" target="_blank" class="btn-cta" data-i18n="btn.apply">
+                    <i class="bi bi-person-plus"></i>
+                    Apply to Join
+                </a>
+                <div class="czech-note mt-3" style="background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.4);">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span>
+                        <span data-i18n="hero.czech_note">Currently accepting analysts working in</span> 
+                        <strong data-i18n="hero.czech_lang">Czech language</strong> 
+                        <span data-i18n="hero.only">only</span>
+                    </span>
+                </div>
+            {% else %}
+                {% if current_user.is_admin %}
+                    <a href="{{ url_for('analyst.dashboard') }}" class="btn-cta" data-i18n="btn.dashboard">
+                        <i class="bi bi-speedometer2"></i>
+                        Go to Dashboard
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('analyst.dashboard') }}" class="btn-cta" data-i18n="btn.my_dashboard">
+                        <i class="bi bi-speedometer2"></i>
+                        View My Dashboard
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Scroll reveal animation
+function reveal() {
+    const reveals = document.querySelectorAll('.reveal');
+    
+    reveals.forEach(element => {
+        const windowHeight = window.innerHeight;
+        const elementTop = element.getBoundingClientRect().top;
+        const elementVisible = 100;
+        
+        if (elementTop < windowHeight - elementVisible) {
+            element.classList.add('active');
+        }
+    });
+}
+
+// Counter animation
+function animateCounter(element) {
+    const target = parseInt(element.getAttribute('data-count'));
+    const duration = 2000;
+    const step = target / (duration / 16);
+    let current = 0;
+    
+    const timer = setInterval(() => {
+        current += step;
+        if (current >= target) {
+            element.textContent = target + (target > 10 ? '+' : '');
+            clearInterval(timer);
+        } else {
+            element.textContent = Math.floor(current);
+        }
+    }, 16);
+}
+
+// Intersection Observer for counters
+const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting && !entry.target.classList.contains('counted')) {
+            entry.target.classList.add('counted');
+            animateCounter(entry.target);
+        }
+    });
+}, { threshold: 0.5 });
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    reveal();
+    
+    // Observe counters
+    document.querySelectorAll('.stat-number').forEach(counter => {
+        counterObserver.observe(counter);
+    });
+    
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+});
+
+window.addEventListener('scroll', reveal);
+
+// Navbar scroll effect
+window.addEventListener('scroll', () => {
+    const navbar = document.querySelector('.navbar');
+    if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
+    }
+});
+</script>
+
+{% if chart_data %}
+<!-- Chart.js for portfolio performance -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('ambitionPortfolioChart').getContext('2d');
+    
+    // Create gradient for portfolio line
+    const gradientPortfolio = ctx.createLinearGradient(0, 0, 0, 200);
+    gradientPortfolio.addColorStop(0, 'rgba(13, 110, 253, 0.25)');
+    gradientPortfolio.addColorStop(1, 'rgba(13, 110, 253, 0.02)');
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ chart_data.dates|tojson|safe }},
+            datasets: [
+                {
+                    label: 'Portfolio',
+                    data: {{ chart_data.portfolio_series|tojson|safe }},
+                    borderColor: '#0d6efd',
+                    backgroundColor: gradientPortfolio,
+                    borderWidth: 2.5,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 5
+                },
+                {
+                    label: 'S&P 500',
+                    data: {{ chart_data.spy_series|tojson|safe }},
+                    borderColor: '#ffc107',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [6, 4],
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 4
+                },
+                {
+                    label: 'FTSE All-World',
+                    data: {{ chart_data.vt_series|tojson|safe }},
+                    borderColor: '#0dcaf5',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [3, 3],
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 4
+                },
+                {
+                    label: 'EEMS',
+                    data: {{ chart_data.eems_series|tojson|safe }},
+                    borderColor: '#6c757d',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [4, 4],
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(26, 26, 46, 0.95)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderWidth: 1,
+                    padding: 10,
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.raw.toFixed(1) + '%';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    display: false,
+                    grid: { display: false }
+                },
+                y: {
+                    display: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: 'rgba(0, 0, 0, 0.5)',
+                        font: { size: 10 },
+                        padding: 5,
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endif %}
+
+{% if growth_data and growth_data.labels %}
+<!-- Growth Timeline Chart -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('growthChart');
+    if (!ctx) return;
+    
+    const growthCtx = ctx.getContext('2d');
+    
+    // Create gradients
+    const gradientTotal = growthCtx.createLinearGradient(0, 0, 0, 280);
+    gradientTotal.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
+    gradientTotal.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
+    
+    const gradientApproved = growthCtx.createLinearGradient(0, 0, 0, 280);
+    gradientApproved.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
+    gradientApproved.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+    
+    new Chart(growthCtx, {
+        type: 'line',
+        data: {
+            labels: {{ growth_data.labels|tojson|safe }},
+            datasets: [
+                {
+                    label: 'Total Analyses',
+                    data: {{ growth_data.datasets[0].data|tojson|safe }},
+                    borderColor: '#2563eb',
+                    backgroundColor: gradientTotal,
+                    borderWidth: 2.5,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 3,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Approved',
+                    data: {{ growth_data.datasets[1].data|tojson|safe }},
+                    borderColor: '#10b981',
+                    backgroundColor: gradientApproved,
+                    borderWidth: 2.5,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 3,
+                    pointHoverRadius: 6
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    align: 'end',
+                    labels: {
+                        usePointStyle: true,
+                        boxWidth: 8,
+                        padding: 15,
+                        font: { size: 11 }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(26, 26, 46, 0.95)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderWidth: 1,
+                    padding: 10,
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.raw + ' analyses';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    display: true,
+                    grid: { display: false },
+                    ticks: {
+                        color: 'rgba(0, 0, 0, 0.5)',
+                        font: { size: 10 },
+                        maxRotation: 45,
+                        minRotation: 45,
+                        maxTicksLimit: 8
+                    }
+                },
+                y: {
+                    display: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: 'rgba(0, 0, 0, 0.5)',
+                        font: { size: 10 },
+                        padding: 5
+                    },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+</script>
+{% endif %}
+
+{% endblock %}
